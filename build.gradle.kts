@@ -1,19 +1,33 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
-    id("java")
+    kotlin("jvm") version "2.0.20"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
-group = "org.example"
-version = "1.0-SNAPSHOT"
+group = "me.d151l.docker.registration.plugin"
+version = "1.0.0"
 
 repositories {
-    mavenCentral()
+    maven {
+        name = "papermc"
+        url = uri("https://repo.papermc.io/repository/maven-public/")
+    }
 }
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    compileOnly("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
+    annotationProcessor("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
+
+    implementation("com.github.docker-java:docker-java-core:3.4.0")
+    implementation("com.github.docker-java:docker-java-transport-httpclient5:3.4.0")
 }
 
-tasks.test {
-    useJUnitPlatform()
+tasks.named("shadowJar", ShadowJar::class) {
+    mergeServiceFiles()
+    archiveFileName.set("${project.name}.jar")
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
